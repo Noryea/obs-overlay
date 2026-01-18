@@ -1,12 +1,12 @@
 package me.zziger.obsoverlay;
 
-import net.minecraft.client.gl.Framebuffer;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 
 public class OverlayFramebuffer {
-    public Framebuffer object;
+    public RenderTarget object;
     public boolean dirty;
 
-    OverlayFramebuffer(Framebuffer object) {
+    OverlayFramebuffer(RenderTarget object) {
         this.object = object;
         this.dirty = false;
     }

@@ -3,10 +3,9 @@ package me.zziger.obsoverlay;
 import me.zziger.obsoverlay.api.IOverlayAPI;
 import me.zziger.obsoverlay.api.impl.DummyOverlayAPI;
 import me.zziger.obsoverlay.api.impl.NormalOverlayAPI;
-import me.zziger.obsoverlay.compat.ImmediatelyFastCompat;
 import me.zziger.obsoverlay.component.AllDefaultOverlayComponents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +14,8 @@ public final class OBSOverlay {
     public static final String MOD_ID = "obs_overlay";
     public static final Logger LOGGER = LoggerFactory.getLogger("obs_overlay");
 
-    public static Identifier id(String path) {
-        return Identifier.of(MOD_ID, path);
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     private static OverlayRenderer renderer = null;
@@ -59,7 +58,7 @@ public final class OBSOverlay {
             initialized = true;
         } catch (Throwable e) {
             LOGGER.error("Failed to initialize OBS Overlay render", e);
-            OverlayUtils.showToast(Text.literal("Failed to initialize OBS Overlay"), Text.literal(e.getMessage()));
+            OverlayUtils.showToast(Component.literal("Failed to initialize OBS Overlay"), Component.literal(e.getMessage()));
 
             renderer = null;
             api = new DummyOverlayAPI();

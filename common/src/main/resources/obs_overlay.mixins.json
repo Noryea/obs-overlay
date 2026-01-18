@@ -6,11 +6,10 @@
   "client": [
     "FramebufferMixin",
     "GameRendererMixin",
-    "MinecraftClientMixin",
-    "RenderSystemMixin",
+    "LevelRendererMixin",
+    "MinecraftMixin",
     "ScreenMixin",
-    "VideoOptionsScreenMixin",
-    "WorldRendererMixin",
+    "VideoSettingsScreenMixin",
     "components.AbstractSignBlockEntityRendererMixin",
     "components.BannerBlockEntityRendererMixin",
     "components.BeaconBlockEntityRendererMixin",
@@ -19,7 +18,7 @@
     "components.ChestBlockEntityRendererMixin",
     "components.DebugHudMixin",
     "components.EntityRendererMixin",
-    "components.InGameHudMixin",
+    "components.GuiMixin",
     "components.MapRendererMixin",
     "components.PlayerListHudMixin",
     "components.SubtitlesHudMixin"

@@ -3,19 +3,19 @@ package me.zziger.obsoverlay.component.type;
 import me.zziger.obsoverlay.OBSOverlayConfig;
 import me.zziger.obsoverlay.component.IOverlayComponent;
 import me.zziger.obsoverlay.component.OverlayComponentRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.resources.ResourceLocation;
 
 public class DefaultOverlayComponent implements IOverlayComponent {
-    private final Identifier id;
+    private final ResourceLocation id;
     private final boolean canAutoHide;
     private final boolean defaultOverlay;
 
     private boolean overlay;
     private boolean autoHide;
 
-    public DefaultOverlayComponent(Identifier id, boolean defaultOverlay, boolean canAutoHide) {
+    public DefaultOverlayComponent(ResourceLocation id, boolean defaultOverlay, boolean canAutoHide) {
         this.id = id;
         this.canAutoHide = canAutoHide;
         this.defaultOverlay = defaultOverlay;
@@ -32,7 +32,7 @@ public class DefaultOverlayComponent implements IOverlayComponent {
 
     @Override
     public String getId() {
-        return id.toTranslationKey();
+        return id.toLanguageKey();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class DefaultOverlayComponent implements IOverlayComponent {
     public boolean isHidden() {
         if (!this.isAutoHideEnabled()) return false;
 
-        Screen currentScreen = MinecraftClient.getInstance().currentScreen;
+        Screen currentScreen = Minecraft.getInstance().screen;
         return currentScreen != null && !OverlayComponentRegistry.ignoredScreens.contains(currentScreen.getClass());
     }
 }

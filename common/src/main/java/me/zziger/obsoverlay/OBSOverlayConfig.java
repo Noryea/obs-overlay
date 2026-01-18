@@ -14,14 +14,13 @@ import me.shedaniel.clothconfig2.api.Requirement;
 import me.shedaniel.clothconfig2.gui.entries.BooleanListEntry;
 import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
 import me.zziger.obsoverlay.component.OverlayComponentRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -93,25 +92,25 @@ public class OBSOverlayConfig implements ConfigData {
         return () -> {
             ConfigBuilder builder = ConfigBuilder.create()
                     .setParentScreen(parent)
-                    .setTitle(Text.translatable("obs_overlay.config.title"));
+                    .setTitle(Component.translatable("obs_overlay.config.title"));
             ConfigEntryBuilder entryBuilder = builder.entryBuilder();
-            ConfigCategory general = builder.getOrCreateCategory(Text.empty());
+            ConfigCategory general = builder.getOrCreateCategory(Component.empty());
 
 
-            general.addEntry(entryBuilder.startBooleanToggle(Text.translatable("obs_overlay.config.show_test_icon"), config.showTestIcon)
-                    .setTooltip(Text.translatable("obs_overlay.config.show_test_icon.tooltip"))
+            general.addEntry(entryBuilder.startBooleanToggle(Component.translatable("obs_overlay.config.show_test_icon"), config.showTestIcon)
+                    .setTooltip(Component.translatable("obs_overlay.config.show_test_icon.tooltip"))
                     .setDefaultValue(false)
                     .setSaveConsumer((value) -> config.showTestIcon = value)
                     .build());
 
             HashMap<String, BooleanListEntry> overlayEntries = new HashMap<>();
-            SubCategoryBuilder componentsToOverlay = entryBuilder.startSubCategory(Text.translatable("obs_overlay.config.components_to_overlay"))
+            SubCategoryBuilder componentsToOverlay = entryBuilder.startSubCategory(Component.translatable("obs_overlay.config.components_to_overlay"))
                     .setExpanded(true)
-                    .setTooltip(Text.translatable("obs_overlay.config.components_to_overlay.tooltip"));
+                    .setTooltip(Component.translatable("obs_overlay.config.components_to_overlay.tooltip"));
 
             OverlayComponentRegistry.components.forEach(component -> {
-                BooleanListEntry entry = entryBuilder.startBooleanToggle(Text.translatable("obs_overlay.component." + component.getId()), component.isOverlayEnabled())
-                        .setTooltip(Text.translatable("obs_overlay.component." + component.getId() + ".tooltip"))
+                BooleanListEntry entry = entryBuilder.startBooleanToggle(Component.translatable("obs_overlay.component." + component.getId()), component.isOverlayEnabled())
+                        .setTooltip(Component.translatable("obs_overlay.component." + component.getId() + ".tooltip"))
                         .setDefaultValue(component.isOverlayEnabledDefault())
                         .setSaveConsumer(component::setOverlayEnabled)
                         .build();
@@ -120,17 +119,17 @@ public class OBSOverlayConfig implements ConfigData {
             });
             general.addEntry(componentsToOverlay.build());
 
-            SubCategoryBuilder screensToOverlay = entryBuilder.startSubCategory(Text.translatable("obs_overlay.config.screens_to_overlay"))
-                    .setTooltip(Text.translatable("obs_overlay.config.screens_to_overlay.tooltip"));
+            SubCategoryBuilder screensToOverlay = entryBuilder.startSubCategory(Component.translatable("obs_overlay.config.screens_to_overlay"))
+                    .setTooltip(Component.translatable("obs_overlay.config.screens_to_overlay.tooltip"));
 
-            BooleanListEntry hideAllScreens = entryBuilder.startBooleanToggle(Text.translatable("obs_overlay.config.hide_all_screens"), config.hideAllScreens)
+            BooleanListEntry hideAllScreens = entryBuilder.startBooleanToggle(Component.translatable("obs_overlay.config.hide_all_screens"), config.hideAllScreens)
                             .setDefaultValue(false)
                             .setSaveConsumer(state -> config.hideAllScreens = state)
                             .build();
             screensToOverlay.add(hideAllScreens);
 
             OverlayComponentRegistry.hideableScreens.forEach((screenId, clazz) -> {
-                BooleanListEntry entry = entryBuilder.startBooleanToggle(Text.translatable("obs_overlay.screen." + screenId), config.overlayScreensList.getOrDefault(screenId, false))
+                BooleanListEntry entry = entryBuilder.startBooleanToggle(Component.translatable("obs_overlay.screen." + screenId), config.overlayScreensList.getOrDefault(screenId, false))
                         .setDefaultValue(false)
                         .setDisplayRequirement(Requirement.isFalse(hideAllScreens))
                         .setSaveConsumer(state -> config.overlayScreensList.put(screenId, state))
@@ -138,8 +137,8 @@ public class OBSOverlayConfig implements ConfigData {
                 screensToOverlay.add(entry);
             });
 
-            BooleanListEntry customHandledScreens = entryBuilder.startBooleanToggle(Text.translatable("obs_overlay.config.enable_custom_handled_screens"), config.overlayHandledScreensEnabled)
-                    .setTooltip(Text.translatable("obs_overlay.config.enable_custom_handled_screens.tooltip"))
+            BooleanListEntry customHandledScreens = entryBuilder.startBooleanToggle(Component.translatable("obs_overlay.config.enable_custom_handled_screens"), config.overlayHandledScreensEnabled)
+                    .setTooltip(Component.translatable("obs_overlay.config.enable_custom_handled_screens.tooltip"))
                     .setDefaultValue(false)
                     .setDisplayRequirement(Requirement.isFalse(hideAllScreens))
                     .setSaveConsumer(state -> config.overlayHandledScreensEnabled = state)
@@ -147,17 +146,17 @@ public class OBSOverlayConfig implements ConfigData {
 
             screensToOverlay.add(customHandledScreens);
 
-            screensToOverlay.add(entryBuilder.startStrList(Text.translatable("obs_overlay.config.custom_handled_screens"), config.overlayHandledScreensList.stream().toList())
-                    .setTooltip(Text.translatable("obs_overlay.config.custom_handled_screens.tooltip"))
+            screensToOverlay.add(entryBuilder.startStrList(Component.translatable("obs_overlay.config.custom_handled_screens"), config.overlayHandledScreensList.stream().toList())
+                    .setTooltip(Component.translatable("obs_overlay.config.custom_handled_screens.tooltip"))
                     .setSaveConsumer(state -> config.overlayHandledScreensList = new HashSet<>(state))
                     .setDisplayRequirement(Requirement.all(Requirement.isFalse(hideAllScreens), Requirement.isTrue(customHandledScreens)))
                     .setErrorSupplier(list -> {
                         for (String id : list) {
                             try {
-                                if (!Registries.SCREEN_HANDLER.containsId(Identifier.of(id)))
-                                    return Optional.of(Text.translatable("obs_overlay.config.screen_doesnt_exist", id));
+                                if (!BuiltInRegistries.MENU.containsKey(ResourceLocation.parse(id)))
+                                    return Optional.of(Component.translatable("obs_overlay.config.screen_doesnt_exist", id));
                             } catch(Exception e) {
-                                return Optional.of(Text.translatable("obs_overlay.config.screen_doesnt_exist", id));
+                                return Optional.of(Component.translatable("obs_overlay.config.screen_doesnt_exist", id));
                             }
                         }
 
@@ -167,8 +166,8 @@ public class OBSOverlayConfig implements ConfigData {
             );
 
 
-            screensToOverlay.add(entryBuilder.startStrList(Text.translatable("obs_overlay.config.existing_handled_screens"), Registries.SCREEN_HANDLER.getIds().stream().filter(Objects::nonNull).map(e -> e.toString()).toList())
-                    .setTooltip(Text.translatable("obs_overlay.config.existing_handled_screens.tooltip"))
+            screensToOverlay.add(entryBuilder.startStrList(Component.translatable("obs_overlay.config.existing_handled_screens"), BuiltInRegistries.MENU.keySet().stream().filter(Objects::nonNull).map(e -> e.toString()).toList())
+                    .setTooltip(Component.translatable("obs_overlay.config.existing_handled_screens.tooltip"))
                     .setDisplayRequirement(Requirement.all(Requirement.isFalse(hideAllScreens), Requirement.isTrue(customHandledScreens)))
                     .setInsertButtonEnabled(false)
                     .setDeleteButtonEnabled(false)
@@ -178,24 +177,24 @@ public class OBSOverlayConfig implements ConfigData {
 
             general.addEntry(screensToOverlay.build());
 
-            SubCategoryBuilder autoHideComponents = entryBuilder.startSubCategory(Text.translatable("obs_overlay.config.auto_hide_components"))
+            SubCategoryBuilder autoHideComponents = entryBuilder.startSubCategory(Component.translatable("obs_overlay.config.auto_hide_components"))
                     .setExpanded(false)
-                    .setTooltip(Text.translatable("obs_overlay.config.auto_hide_components.tooltip"));
+                    .setTooltip(Component.translatable("obs_overlay.config.auto_hide_components.tooltip"));
 
             OverlayComponentRegistry.components.forEach(component -> {
                 if (!component.canAutoHide()) return;
                 if (!overlayEntries.containsKey(component.getId())) return;
 
-                autoHideComponents.add(entryBuilder.startBooleanToggle(Text.translatable("obs_overlay.component." + component.getId()), component.isAutoHideEnabled())
+                autoHideComponents.add(entryBuilder.startBooleanToggle(Component.translatable("obs_overlay.component." + component.getId()), component.isAutoHideEnabled())
                         .setDefaultValue(true)
                         .setRequirement(Requirement.isTrue(overlayEntries.get(component.getId())))
                         .setTooltipSupplier(() -> {
-                            Text mainTooltip = Text.translatable("obs_overlay.component." + component.getId() + ".tooltip");
+                            Component mainTooltip = Component.translatable("obs_overlay.component." + component.getId() + ".tooltip");
                             if (overlayEntries.get(component.getId()).getValue()) {
-                                return Optional.of(new Text[]{mainTooltip});
+                                return Optional.of(new Component[]{mainTooltip});
                             } else {
-                                Text optionName = Text.translatable("obs_overlay.component." + component.getId());
-                                return Optional.of(new Text[] {mainTooltip, Text.translatable("obs_overlay.config.requires_overlay_enabled", optionName).formatted(Formatting.RED)});
+                                Component optionName = Component.translatable("obs_overlay.component." + component.getId());
+                                return Optional.of(new Component[] {mainTooltip, Component.translatable("obs_overlay.config.requires_overlay_enabled", optionName).withStyle(ChatFormatting.RED)});
                             }
                         })
                         .setSaveConsumer(component::setAutoHideEnabled)
@@ -230,12 +229,12 @@ public class OBSOverlayConfig implements ConfigData {
     public static boolean isScreenOverlayed(Screen screen) {
         OBSOverlayConfig config = OBSOverlayConfig.get();
 
-        if (config.hideAllScreens && MinecraftClient.getInstance().world != null) return true;
+        if (config.hideAllScreens && Minecraft.getInstance().level != null) return true;
         if (config.overlayScreensClasses.contains(screen.getClass())) return true;
         if (config.overlayHandledScreensEnabled) {
-            if (screen instanceof HandledScreen<?> handledScreen) {
+            if (screen instanceof AbstractContainerScreen<?> handledScreen) {
                 try {
-                    Identifier id = Registries.SCREEN_HANDLER.getId(handledScreen.getScreenHandler().getType());
+                    ResourceLocation id = BuiltInRegistries.MENU.getKey(handledScreen.getMenu().getType());
                     if (id != null && (config.overlayHandledScreensList.contains(id.toString()) || config.overlayHandledScreensList.contains(id.getPath())))
                         return true;
                 } catch (Exception ignored) {

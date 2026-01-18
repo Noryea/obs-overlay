@@ -1,29 +1,23 @@
 package me.zziger.obsoverlay;
 
 import me.zziger.obsoverlay.compat.ImmediatelyFastCompat;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
 import net.raphimc.immediatelyfast.feature.core.BatchableBufferSource;
 
 public class OverlayUtils {
-    public static void forceDraw(VertexConsumerProvider consumer) {
-        if (ImmediatelyFastCompat.hasImmediatelyFast() && consumer instanceof BatchableBufferSource batchable) batchable.draw();
-        if (consumer instanceof VertexConsumerProvider.Immediate immediate) immediate.draw();
+    public static void forceDraw(MultiBufferSource consumer) {
+        if (ImmediatelyFastCompat.hasImmediatelyFast() && consumer instanceof BatchableBufferSource batchable) batchable.endBatch();
+        if (consumer instanceof MultiBufferSource.BufferSource immediate) immediate.endBatch();
     }
 
-    public static void showToast(Text title, Text description) {
-        MinecraftClient.getInstance().submit(() ->
-                MinecraftClient.getInstance()
+    public static void showToast(Component title, Component description) {
+        Minecraft.getInstance().submit(() ->
+                Minecraft.getInstance()
                         .getToastManager()
-                        .add(new SystemToast(SystemToast.Type.LOW_DISK_SPACE, title, description))
+                        .addToast(new SystemToast(SystemToast.SystemToastId.LOW_DISK_SPACE, title, description))
         );
     }
 }
