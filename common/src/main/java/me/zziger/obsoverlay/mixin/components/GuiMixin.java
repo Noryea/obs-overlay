@@ -9,63 +9,64 @@ import net.minecraft.world.scores.Objective;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Gui.class)
 public class GuiMixin {
 
-    @Inject(method = "displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V", at = @At("HEAD"))
-    private void drawStartScoreboard(GuiGraphics guiGraphics, Objective objective, CallbackInfo ci) {
-        OBSOverlay.getAPI().beginDraw(AllDefaultOverlayComponents.scoreboards);
+    @ModifyVariable(method = "displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V", at = @At("HEAD"), argsOnly = true)
+    private GuiGraphics drawStartScoreboard(GuiGraphics value) {
+        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.scoreboards, value);
     }
 
     @Inject(method = "displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V", at = @At("RETURN"))
     private void drawEndScoreboard(GuiGraphics guiGraphics, Objective objective, CallbackInfo ci) {
         // guiGraphics.bufferSource.endLastBatch();
-        OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.scoreboards);
+        // OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.scoreboards);
     }
 
-    @Inject(method = "renderOverlayMessage", at = @At("HEAD"))
-    private void drawStartActionbar(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
-        OBSOverlay.getAPI().beginDraw(AllDefaultOverlayComponents.actionbar);
+    @ModifyVariable(method = "renderOverlayMessage", at = @At("HEAD"), argsOnly = true)
+    private GuiGraphics drawStartActionbar(GuiGraphics value) {
+        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.actionbar, value);
     }
 
     @Inject(method = "renderOverlayMessage", at = @At("RETURN"))
     private void drawEndActionbar(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
         // guiGraphics.bufferSource.endLastBatch();
-        OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.actionbar);
+        // OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.actionbar);
     }
 
-    @Inject(method = "renderTitle", at = @At("HEAD"))
-    private void drawStartTitleSubtitle(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
-        OBSOverlay.getAPI().beginDraw(AllDefaultOverlayComponents.titleSubtitle);
+    @ModifyVariable(method = "renderTitle", at = @At("HEAD"), argsOnly = true)
+    private GuiGraphics drawStartTitleSubtitle(GuiGraphics value) {
+        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.titleSubtitle, value);
     }
 
     @Inject(method = "renderTitle", at = @At("RETURN"))
     private void drawEndTitleSubtitle(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
         // guiGraphics.bufferSource.endLastBatch();
-        OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.titleSubtitle);
+        // OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.titleSubtitle);
     }
 
-    @Inject(method = "renderEffects", at = @At("HEAD"))
-    private void drawStartEffects(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
-        OBSOverlay.getAPI().beginDraw(AllDefaultOverlayComponents.effects);
+    @ModifyVariable(method = "renderEffects", at = @At("HEAD"), argsOnly = true)
+    private GuiGraphics drawStartEffects(GuiGraphics value) {
+        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.effects, value);
     }
 
     @Inject(method = "renderEffects", at = @At("RETURN"))
     private void drawEndEffects(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
         // guiGraphics.bufferSource.endLastBatch();
-        OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.effects);
+        // OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.effects);
     }
 
-    @Inject(method = "renderHotbarAndDecorations", at = @At("HEAD"))
-    private void drawStartMainHud(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
-        OBSOverlay.getAPI().beginDraw(AllDefaultOverlayComponents.mainHud);
+    @ModifyVariable(method = "renderHotbarAndDecorations", at = @At("HEAD"), argsOnly = true)
+    private GuiGraphics drawStartMainHud(GuiGraphics value) {
+        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
     }
 
     @Inject(method = "renderHotbarAndDecorations", at = @At("RETURN"))
     private void drawEndMainHud(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
         // guiGraphics.bufferSource.endLastBatch();
-        OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.mainHud);
+        // // OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.mainHud);
     }
 }

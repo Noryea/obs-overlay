@@ -27,6 +27,6 @@ public abstract class GameRendererMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/client/ClientHooks;drawScreen(Lnet/minecraft/client/gui/screens/Screen;Lnet/minecraft/client/gui/GuiGraphics;IIF)V", shift = At.Shift.AFTER))
     private void afterScreenRender(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
         Screen screen = this.getMinecraft().screen;
-        if (screen != null) ScreenOverlayRenderer.afterScreenRender(screen, guiGraphics);
+        if (screen != null) ScreenOverlayRenderer.afterScreenRender(screen);
     }
 }

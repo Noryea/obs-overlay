@@ -1,30 +1,30 @@
 package me.zziger.obsoverlay.api;
 
+import me.zziger.obsoverlay.DummyGuiGraphics;
 import me.zziger.obsoverlay.component.IOverlayComponent;
+import net.minecraft.client.gui.GuiGraphics;
 
 public interface IOverlayAPI {
     /**
-     * Should be called before drawing a specific component
+     * Should be called before submitting a specific component to a `GuiGraphics`
      * This will hide component only if it is enabled in settings
      * @param component Component that is being drawn
      */
-    default void beginDraw(IOverlayComponent component) {}
+    default GuiGraphics getGuiGraphics(IOverlayComponent component, GuiGraphics original) {
+        return original;
+    }
 
     /**
-     * Should be called after drawing a specific component, if you used beginDraw(IOverlayComponent component)
-     * @param component Component that was drawn
-     */
-    default void endDraw(IOverlayComponent component) {}
-
-    /**
-     * Should be called before rendering elements, that you want hidden from stream
+     * Should be called before rendering elements you want hidden from stream to a `GuiGraphics`
      * This method does not check settings
      */
-    default void beginDraw() {}
+    default GuiGraphics getGuiGraphics() {
+        return DummyGuiGraphics.INSTANCE;
+    }
 
     /**
-     * Should be called after rendering elements, if you used beginDraw()
-     * This method does not check settings
+     * 1.21.11: Called at the start of GUI extraction phase
+     * Initializes overlay-specific GuiRenderState and GuiGraphics
      */
-    default void endDraw() {}
+    default void resetGuiExtraction() {}
 }

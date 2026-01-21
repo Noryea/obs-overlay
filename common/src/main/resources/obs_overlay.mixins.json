@@ -4,11 +4,12 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
-    "FramebufferMixin",
     "GameRendererMixin",
+    "GuiRendererMixin",
     "MinecraftMixin",
     "ScreenMixin",
     "VideoSettingsScreenMixin",
+    "accessor.GuiRendererAccessor",
     "components.ChatHudMixin",
     "components.ChatScreenMixin",
     "components.DebugHudMixin",
