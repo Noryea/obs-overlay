@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 
-public class DefaultOverlayComponent implements IOverlayComponent {
+public abstract class DefaultOverlayComponent implements IOverlayComponent {
     private final ResourceLocation id;
     private final boolean canAutoHide;
     private final boolean defaultOverlay;

@@ -1,7 +1,5 @@
 package me.zziger.obsoverlay.component;
 
-import me.zziger.obsoverlay.OverlayFramebufferType;
-
 public interface IOverlayComponent {
 
     /**
@@ -46,21 +44,4 @@ public interface IOverlayComponent {
      * @return Is the component hidden (e.g. by auto-hide)
      */
     boolean isHidden();
-
-    /**
-     * Invoked before beginDraw
-     */
-    default void beforeBeginDraw() {};
-
-    /**
-     * Invoked before endDraw
-     */
-    default void beforeEndDraw() {};
-
-    /**
-     * Return required framebuffer type
-     */
-    default OverlayFramebufferType getFramebufferType() {
-        return OverlayFramebufferType.NORMAL;
-    }
 }

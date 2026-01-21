@@ -8,7 +8,7 @@ public class ScreenOverlayRenderer {
     public static void beforeScreenRender(Screen instance) {
         boolean overlay = OBSOverlayConfig.isScreenOverlayed(instance);
         if (overlay) {
-            OBSOverlay.getAPI().beginDraw(OverlayFramebufferType.NORMAL);
+            OBSOverlay.getAPI().beginDraw();
         }
     }
 
@@ -16,7 +16,7 @@ public class ScreenOverlayRenderer {
         guiGraphics.flush();
         boolean overlay = OBSOverlayConfig.isScreenOverlayed(instance);
         if (overlay) {
-            OBSOverlay.getAPI().endDraw(OverlayFramebufferType.NORMAL);
+            OBSOverlay.getAPI().endDraw();
         }
     }
 }

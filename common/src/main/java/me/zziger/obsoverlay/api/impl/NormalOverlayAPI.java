@@ -1,8 +1,6 @@
 package me.zziger.obsoverlay.api.impl;
 
-import me.zziger.obsoverlay.OverlayFramebufferType;
 import me.zziger.obsoverlay.OverlayRenderer;
-import me.zziger.obsoverlay.OverlayUtils;
 import me.zziger.obsoverlay.api.IOverlayAPI;
 import me.zziger.obsoverlay.component.IOverlayComponent;
 
@@ -24,17 +22,12 @@ public class NormalOverlayAPI implements IOverlayAPI {
     }
 
     @Override
-    public void beginDraw(OverlayFramebufferType type) {
-        this.renderer.beginDraw(type);
+    public void beginDraw() {
+        this.renderer.beginDraw();
     }
 
     @Override
-    public void endDraw(OverlayFramebufferType type) {
+    public void endDraw() {
         this.renderer.endDraw();
-    }
-
-    @Override
-    public void backupDepth(boolean overrideDepth) {
-        this.renderer.backupDepth(overrideDepth);
     }
 }
