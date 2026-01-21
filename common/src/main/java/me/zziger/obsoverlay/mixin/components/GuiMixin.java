@@ -21,7 +21,7 @@ public class GuiMixin {
 
     @Inject(method = "displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V", at = @At("RETURN"))
     private void drawEndScoreboard(GuiGraphics guiGraphics, Objective objective, CallbackInfo ci) {
-        guiGraphics.bufferSource.endLastBatch();
+        // guiGraphics.bufferSource.endLastBatch();
         OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.scoreboards);
     }
 
@@ -32,7 +32,7 @@ public class GuiMixin {
 
     @Inject(method = "renderOverlayMessage", at = @At("RETURN"))
     private void drawEndActionbar(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
-        guiGraphics.bufferSource.endLastBatch();
+        // guiGraphics.bufferSource.endLastBatch();
         OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.actionbar);
     }
 
@@ -43,19 +43,8 @@ public class GuiMixin {
 
     @Inject(method = "renderTitle", at = @At("RETURN"))
     private void drawEndTitleSubtitle(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
-        guiGraphics.bufferSource.endLastBatch();
+        // guiGraphics.bufferSource.endLastBatch();
         OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.titleSubtitle);
-    }
-
-    @Inject(method = "renderExperienceLevel", at = @At("HEAD"))
-    private void drawStartExperienceLevel(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
-        OBSOverlay.getAPI().beginDraw(AllDefaultOverlayComponents.mainHud);
-    }
-
-    @Inject(method = "renderExperienceLevel", at = @At("RETURN"))
-    private void drawEndExperienceLevel(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
-        guiGraphics.bufferSource.endLastBatch();
-        OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.mainHud);
     }
 
     @Inject(method = "renderEffects", at = @At("HEAD"))
@@ -65,7 +54,7 @@ public class GuiMixin {
 
     @Inject(method = "renderEffects", at = @At("RETURN"))
     private void drawEndEffects(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
-        guiGraphics.bufferSource.endLastBatch();
+        // guiGraphics.bufferSource.endLastBatch();
         OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.effects);
     }
 
@@ -76,7 +65,7 @@ public class GuiMixin {
 
     @Inject(method = "renderHotbarAndDecorations", at = @At("RETURN"))
     private void drawEndMainHud(GuiGraphics guiGraphics, DeltaTracker tickCounter, CallbackInfo ci) {
-        guiGraphics.bufferSource.endLastBatch();
+        // guiGraphics.bufferSource.endLastBatch();
         OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.mainHud);
     }
 }

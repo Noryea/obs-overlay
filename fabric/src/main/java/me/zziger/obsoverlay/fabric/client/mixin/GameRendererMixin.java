@@ -18,14 +18,14 @@ public abstract class GameRendererMixin {
     @Shadow
     public abstract Minecraft getMinecraft();
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", shift = At.Shift.BEFORE))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", shift = At.Shift.BEFORE))
     private void beforeScreenRender(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         Screen screen = this.getMinecraft().screen;
         if (screen != null) ScreenOverlayRenderer.beforeScreenRender(screen);
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", shift = At.Shift.AFTER))
-    private void afterScreenRender(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local(index = 10) GuiGraphics guiGraphics) {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", shift = At.Shift.AFTER))
+    private void afterScreenRender(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
         Screen screen = this.getMinecraft().screen;
         if (screen != null) ScreenOverlayRenderer.afterScreenRender(screen, guiGraphics);
     }

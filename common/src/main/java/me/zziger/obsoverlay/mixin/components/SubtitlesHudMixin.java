@@ -18,7 +18,7 @@ public class SubtitlesHudMixin {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void drawEnd(GuiGraphics guiGraphics, CallbackInfo ci) {
-        guiGraphics.bufferSource.endLastBatch();
+        // guiGraphics.bufferSource.endLastBatch();
         OBSOverlay.getAPI().endDraw(AllDefaultOverlayComponents.subtitles);
     }
 }

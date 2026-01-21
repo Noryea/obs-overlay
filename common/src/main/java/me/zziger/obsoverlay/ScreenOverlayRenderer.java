@@ -13,7 +13,7 @@ public class ScreenOverlayRenderer {
     }
 
     public static void afterScreenRender(Screen instance, GuiGraphics guiGraphics) {
-        guiGraphics.flush();
+        // guiGraphics.flush();
         boolean overlay = OBSOverlayConfig.isScreenOverlayed(instance);
         if (overlay) {
             OBSOverlay.getAPI().endDraw();

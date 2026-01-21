@@ -5,17 +5,17 @@ import me.zziger.obsoverlay.component.IOverlayComponent;
 import me.zziger.obsoverlay.component.OverlayComponentRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public abstract class DefaultOverlayComponent implements IOverlayComponent {
-    private final ResourceLocation id;
+    private final Identifier id;
     private final boolean canAutoHide;
     private final boolean defaultOverlay;
 
     private boolean overlay;
     private boolean autoHide;
 
-    public DefaultOverlayComponent(ResourceLocation id, boolean defaultOverlay, boolean canAutoHide) {
+    public DefaultOverlayComponent(Identifier id, boolean defaultOverlay, boolean canAutoHide) {
         this.id = id;
         this.canAutoHide = canAutoHide;
         this.defaultOverlay = defaultOverlay;

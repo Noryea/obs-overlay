@@ -25,10 +25,6 @@ configurations {
     }
 }
 
-loom {
-    accessWidenerPath = file("src/main/resources/obs_overlay.neoforge.accesswidener")
-}
-
 repositories {
     maven {
         name = 'NeoForged'
