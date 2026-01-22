@@ -20,7 +20,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -154,7 +154,7 @@ public class OBSOverlayConfig implements ConfigData {
                     .setErrorSupplier(list -> {
                         for (String id : list) {
                             try {
-                                if (!BuiltInRegistries.MENU.containsKey(Identifier.parse(id)))
+                                if (!BuiltInRegistries.MENU.containsKey(ResourceLocation.parse(id)))
                                     return Optional.of(Component.translatable("obs_overlay.config.screen_doesnt_exist", id));
                             } catch(Exception e) {
                                 return Optional.of(Component.translatable("obs_overlay.config.screen_doesnt_exist", id));
@@ -235,7 +235,7 @@ public class OBSOverlayConfig implements ConfigData {
         if (config.overlayHandledScreensEnabled) {
             if (screen instanceof AbstractContainerScreen<?> handledScreen) {
                 try {
-                    Identifier id = BuiltInRegistries.MENU.getKey(handledScreen.getMenu().getType());
+                    ResourceLocation id = BuiltInRegistries.MENU.getKey(handledScreen.getMenu().getType());
                     if (id != null && (config.overlayHandledScreensList.contains(id.toString()) || config.overlayHandledScreensList.contains(id.getPath())))
                         return true;
                 } catch (Exception ignored) {

@@ -5,7 +5,7 @@ import me.zziger.obsoverlay.api.impl.DummyOverlayAPI;
 import me.zziger.obsoverlay.api.impl.NormalOverlayAPI;
 import me.zziger.obsoverlay.component.AllDefaultOverlayComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +14,8 @@ public final class OBSOverlay {
     public static final String MOD_ID = "obs_overlay";
     public static final Logger LOGGER = LoggerFactory.getLogger("obs_overlay");
 
-    public static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     private static OverlayRenderer renderer = null;

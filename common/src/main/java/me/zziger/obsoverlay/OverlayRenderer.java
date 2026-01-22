@@ -1,12 +1,13 @@
 package me.zziger.obsoverlay;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import me.zziger.obsoverlay.component.IOverlayComponent;
 import me.zziger.obsoverlay.mixin.accessor.GuiRendererAccessor;
 import net.minecraft.client.Minecraft;
@@ -67,8 +68,6 @@ public class OverlayRenderer implements Closeable {
         this.overlayGuiRenderer = new GuiRenderer(
                 this.overlayGuiState,
                 accessor.getBufferSource(),
-                accessor.getSubmitNodeCollector(),
-                accessor.getFeatureRenderDispatcher(),
                 accessor.getPictureInPictureRenderers().values().stream().toList()
         );
 
@@ -116,21 +115,20 @@ public class OverlayRenderer implements Closeable {
         Minecraft minecraft = Minecraft.getInstance();
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
+        var autoStorageIndexBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
+        GpuBuffer indexBuffer = autoStorageIndexBuffer.getBuffer(6);
 
         try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
                 () -> "Overlay Screen",
                 new OverlayScreenTextureView(width, height),
                 OptionalInt.empty()
         )) {
-//            renderPass.setPipeline(RenderPipelines.ENTITY_OUTLINE_BLIT);
             renderPass.setPipeline(OverlayPipelines.OVERLAY_COMPOSITE);
             RenderSystem.bindDefaultUniforms(renderPass);
-            renderPass.bindTexture(
-                    "InSampler",
-                    framebuffer.getColorTextureView(),
-                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
-            );
-            renderPass.draw(0, 3);
+            renderPass.setVertexBuffer(0, RenderSystem.getQuadVertexBuffer());
+            renderPass.setIndexBuffer(indexBuffer, autoStorageIndexBuffer.type());
+            renderPass.bindSampler("InSampler", framebuffer.getColorTextureView());
+            renderPass.drawIndexed(0, 0, 6, 1);
         }
     }
 
@@ -142,11 +140,8 @@ public class OverlayRenderer implements Closeable {
 
     private void resetGuiExtraction() {
         Minecraft minecraft = Minecraft.getInstance();
-        int mouseX = (int) minecraft.mouseHandler.getScaledXPos(minecraft.getWindow());
-        int mouseY = (int) minecraft.mouseHandler.getScaledYPos(minecraft.getWindow());
-
         this.overlayGuiState.reset();
-        this.overlayGuiGraphics = new GuiGraphics(minecraft, overlayGuiState, mouseX, mouseY);
+        this.overlayGuiGraphics = new GuiGraphics(minecraft, overlayGuiState);
     }
 
     public void renderFrame() {

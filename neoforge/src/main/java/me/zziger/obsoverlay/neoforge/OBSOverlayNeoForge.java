@@ -19,7 +19,7 @@ public final class OBSOverlayNeoForge {
         // Run our common setup.
         OBSOverlay.init();
 
-        if (FMLEnvironment.getDist().isClient()) {
+        if (FMLEnvironment.dist.isClient()) {
             registerModsPage();
         }
     }

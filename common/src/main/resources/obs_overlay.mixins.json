@@ -9,7 +9,6 @@
     "MinecraftMixin",
     "ScreenMixin",
     "VideoSettingsScreenMixin",
-    "accessor.GuiGraphicsCursorAccessor",
     "accessor.GuiRendererAccessor",
     "components.ChatHudMixin",
     "components.ChatScreenMixin",

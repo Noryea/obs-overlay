@@ -3,8 +3,9 @@ package me.zziger.obsoverlay;
 import com.mojang.blaze3d.opengl.DirectStateAccess;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.opengl.GlTextureView;
+import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.TextureFormat;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 // A Fake Texture View, to insure FBO=0
 public class OverlayScreenTextureView extends GlTextureView {
@@ -15,11 +16,6 @@ public class OverlayScreenTextureView extends GlTextureView {
         super(new ScreenTexture(width, height), 0, 1);
         this.width = width;
         this.height = height;
-    }
-
-    @Override
-    public int getFbo(@NotNull DirectStateAccess dsa, com.mojang.blaze3d.textures.GpuTexture depth) {
-        return 0;
     }
 
     @Override
@@ -41,7 +37,7 @@ public class OverlayScreenTextureView extends GlTextureView {
         return height;
     }
 
-    // Fake Texture
+    // Fake Texture, FBO = 0
     private static class ScreenTexture extends GlTexture {
         public ScreenTexture(int width, int height) {
             super(
@@ -54,6 +50,11 @@ public class OverlayScreenTextureView extends GlTextureView {
                     1,
                     0   // Screen
             );
+        }
+
+        @Override
+        public int getFbo(DirectStateAccess directStateAccess, @Nullable GpuTexture texture) {
+            return 0;
         }
 
         @Override
