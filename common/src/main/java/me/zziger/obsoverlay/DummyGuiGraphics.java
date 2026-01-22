@@ -1,8 +1,11 @@
 package me.zziger.obsoverlay;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import me.zziger.obsoverlay.mixin.accessor.GuiGraphicsAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.client.model.BookModel;
 import net.minecraft.client.model.Model;
@@ -10,14 +13,13 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.MapRenderState;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.profiling.ResultField;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -31,26 +33,54 @@ public class DummyGuiGraphics extends GuiGraphics {
         super(Minecraft.getInstance(), new GuiRenderState());
     }
 
-
     @Override
     public void nextStratum() {
+        var accessor = (GuiGraphicsAccessor) this;
+        accessor.getGuiRenderState().reset();
     }
-
 
     @Override
     public void blurBeforeThisStratum() {
     }
 
     @Override
-    public void drawString(@NotNull Font font, @NotNull FormattedCharSequence text, int x, int y, int color, boolean drawShadow) {
+    public void fill(RenderPipeline pipeline, int minX, int minY, int maxX, int maxY, int color) {
     }
 
     @Override
-    public void submitMapRenderState(@NotNull MapRenderState renderState) {
+    public void fillGradient(int minX, int minY, int maxX, int maxY, int colorFrom, int colorTo) {
     }
 
     @Override
-    public void submitEntityRenderState(@NotNull EntityRenderState renderState, float scale, @NotNull Vector3f translation, @NotNull Quaternionf rotation, @Nullable Quaternionf overrideCameraAngle, int x0, int y0, int x1, int y1) {
+    public void fill(RenderPipeline pipeline, TextureSetup textureSetup, int minX, int minY, int maxX, int maxY) {
+    }
+
+    @Override
+    public void blitSprite(RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height, int color) {
+    }
+
+    @Override
+    public void blitSprite(RenderPipeline pipeline, ResourceLocation sprite, int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height, int color) {
+    }
+
+    @Override
+    public void blitSprite(RenderPipeline pipeline, TextureAtlasSprite sprite, int x, int y, int width, int height, int color) {
+    }
+
+    @Override
+    public void blit(RenderPipeline pipeline, ResourceLocation atlas, int x, int y, float u, float v, int width, int height, int uWidth, int vHeight, int textureWidth, int textureHeight, int color) {
+    }
+
+    @Override
+    public void drawString(Font font, FormattedCharSequence text, int x, int y, int color, boolean drawShadow) {
+    }
+
+    @Override
+    public void submitMapRenderState(MapRenderState renderState) {
+    }
+
+    @Override
+    public void submitEntityRenderState(EntityRenderState renderState, float scale, Vector3f translation, Quaternionf rotation, Quaternionf overrideCameraAngle, int x0, int y0, int x1, int y1) {
     }
 
     @Override
@@ -58,7 +88,7 @@ public class DummyGuiGraphics extends GuiGraphics {
     }
 
     @Override
-    public void submitBookModelRenderState(BookModel bookModel, ResourceLocation texture, float scale, float open, float flip, int x0, int y0, int x1, int y1) {
+    public void submitBookModelRenderState(BookModel bookModel, ResourceLocation texture, float open, float flip, float x0, int y0, int x1, int y1, int scale) {
     }
 
     @Override
@@ -70,6 +100,6 @@ public class DummyGuiGraphics extends GuiGraphics {
     }
 
     @Override
-    public void submitProfilerChartRenderState(@NotNull List<ResultField> chartData, int x0, int y0, int x1, int y1) {
+    public void submitProfilerChartRenderState(List<ResultField> chartData, int x0, int y0, int x1, int y1) {
     }
 }
