@@ -13,7 +13,6 @@ import java.util.Map;
 
 @Mixin(GuiRenderer.class)
 public interface GuiRendererAccessor {
-
     @Accessor("bufferSource")
     MultiBufferSource.BufferSource getBufferSource();
 
@@ -25,5 +24,4 @@ public interface GuiRendererAccessor {
 
     @Accessor("pictureInPictureRenderers")
     Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> getPictureInPictureRenderers();
-
 }
