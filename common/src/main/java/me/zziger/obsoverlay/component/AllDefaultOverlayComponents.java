@@ -4,7 +4,7 @@ import me.zziger.obsoverlay.OBSOverlay;
 import me.zziger.obsoverlay.component.type.HUDOverlayComponent;
 
 public class AllDefaultOverlayComponents {
-    public static IOverlayComponent debugMenu =     new HUDOverlayComponent(OBSOverlay.id("debug_menu"), true, false);
+    public static IOverlayComponent debugMenu =     new HUDOverlayComponent(OBSOverlay.id("debug_menu"), true, true);
     public static IOverlayComponent chat =          new HUDOverlayComponent(OBSOverlay.id("chat"), false, true);
     public static IOverlayComponent chatBar =       new HUDOverlayComponent(OBSOverlay.id("chat_bar"), false, false);
     public static IOverlayComponent playerList =    new HUDOverlayComponent(OBSOverlay.id("player_list"), false, false);
