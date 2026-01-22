@@ -1,47 +1,35 @@
 package me.zziger.obsoverlay;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.opengl.GlDevice;
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuSampler;
 import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.vertex.*;
 import me.zziger.obsoverlay.component.IOverlayComponent;
+import me.zziger.obsoverlay.mixin.accessor.GuiRendererAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.state.GuiRenderState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
-import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
-import static org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER;
-
 public class OverlayRenderer implements Closeable {
-    private GpuBuffer overlayBuffer;
     private boolean framebufferOverridden = false;
     private OverlayFramebuffer overlayFramebuffer;
 
-    public final GuiRenderState overlayGuiRenderState = new GuiRenderState();
+    private final GuiRenderState overlayGuiState = new GuiRenderState();
     private GuiGraphics overlayGuiGraphics;
-    // private boolean overlayExtractionActive = false;
+    private GuiRenderer overlayGuiRenderer;
 
     OverlayRenderer() {
         OverlayHook.init();
         OverlayHook.subscribe(this::renderFrame);
         initializeFramebuffers();
-        initializeQuadOverlayBuffer();
     }
 
     public void close() {
@@ -53,21 +41,6 @@ public class OverlayRenderer implements Closeable {
         RenderTarget simpleFramebuffer = new TextureTarget("Overlay Target", client.getWindow().getWidth(), client.getWindow().getHeight(), true);
         clearFramebuffer(simpleFramebuffer);
         this.overlayFramebuffer = new OverlayFramebuffer(simpleFramebuffer);
-    }
-
-    private void initializeQuadOverlayBuffer() {
-        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferBuilder.addVertex(-1.0f, -1.0f, 0.0F).setUv(0, 0);
-        bufferBuilder.addVertex(1.0f, -1.0f, 0.0F).setUv(1, 0);
-        bufferBuilder.addVertex(1.0f, 1.0f, 0.0F).setUv(1, 1);
-        bufferBuilder.addVertex(-1.0f, 1.0f, 0.0F).setUv(0, 1);
-        try (MeshData meshData = bufferBuilder.buildOrThrow()) {
-            this.overlayBuffer = RenderSystem.getDevice().createBuffer(
-                    () -> "OBS Overlay Composite Vertices",
-                    GpuBuffer.USAGE_VERTEX,
-                    meshData.vertexBuffer()
-            );
-        }
     }
 
     private void markOverlayDirty() {
@@ -87,15 +60,19 @@ public class OverlayRenderer implements Closeable {
         }
     }
 
-    private static Optional<Integer> getFboId(RenderTarget renderTarget) {
-        if (renderTarget == null) return Optional.empty();
-        GpuTexture colorTexture = renderTarget.getColorTexture();
-        GpuTexture depthTexture = renderTarget.getDepthTexture();
-        if (RenderSystem.getDevice() instanceof GlDevice glDevice && colorTexture instanceof GlTexture t) {
-            int fbo = t.getFbo(glDevice.directStateAccess(), depthTexture);
-            return Optional.of(fbo);
-        }
-        return Optional.empty();
+    public @NotNull GuiRenderer getOverlayGuiRenderer(GuiRenderer copyFrom) {
+        if (overlayGuiRenderer != null) return overlayGuiRenderer;
+
+        var accessor = (GuiRendererAccessor) copyFrom;
+        this.overlayGuiRenderer = new GuiRenderer(
+                this.overlayGuiState,
+                accessor.getBufferSource(),
+                accessor.getSubmitNodeCollector(),
+                accessor.getFeatureRenderDispatcher(),
+                accessor.getPictureInPictureRenderers().values().stream().toList()
+        );
+
+        return overlayGuiRenderer;
     }
 
     public RenderTarget getGuiRenderTarget() {
@@ -103,7 +80,7 @@ public class OverlayRenderer implements Closeable {
         else return Minecraft.getInstance().getMainRenderTarget();
     }
 
-    public @Nullable GuiGraphics getGuiGraphics() {
+    public GuiGraphics getGuiGraphics() {
         return this.overlayGuiGraphics;
     }
 
@@ -133,56 +110,48 @@ public class OverlayRenderer implements Closeable {
         );
     }
 
-    // 使用 1.21.11 的 RenderPipeline API 替代旧的 ShaderProgram
-    private void renderQuad(RenderTarget framebuffer) {
-        Minecraft client = Minecraft.getInstance();
+    private static void renderQuad(RenderTarget framebuffer) {
+        if (framebuffer.getColorTexture() == null) return;
 
-        CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
-        RenderTarget mainTarget = client.getMainRenderTarget();
-        try (RenderPass pass = encoder.createRenderPass(
-            () -> "OBS Overlay Composite",
-            mainTarget.getColorTextureView(),
-            OptionalInt.empty(),
-            mainTarget.getDepthTextureView(),
-            OptionalDouble.empty()
+        Minecraft minecraft = Minecraft.getInstance();
+        int width = minecraft.getWindow().getWidth();
+        int height = minecraft.getWindow().getHeight();
+
+        try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
+                () -> "Overlay Screen",
+                new OverlayScreenTextureView(width, height),
+                OptionalInt.empty()
         )) {
-            pass.setPipeline(OverlayPipelines.OVERLAY_COMPOSITE);
-            RenderSystem.bindDefaultUniforms(pass);
-
-            pass.setVertexBuffer(0, this.overlayBuffer);
-            GpuSampler sampler = RenderSystem.getSamplerCache().getSampler(
-                    AddressMode.CLAMP_TO_EDGE,
-                    AddressMode.CLAMP_TO_EDGE,
-                    FilterMode.LINEAR,
-                    FilterMode.NEAREST,
-                    false
+//            renderPass.setPipeline(RenderPipelines.ENTITY_OUTLINE_BLIT);
+            renderPass.setPipeline(OverlayPipelines.OVERLAY_COMPOSITE);
+            RenderSystem.bindDefaultUniforms(renderPass);
+            renderPass.bindTexture(
+                    "InSampler",
+                    framebuffer.getColorTextureView(),
+                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
             );
-            pass.bindTexture("Sampler0", framebuffer.getColorTextureView(), sampler);
-            pass.draw(0, 4);
+            renderPass.draw(0, 3);
         }
     }
 
     public void beginFrame() {
         if (overlayFramebuffer == null) return;
         clearFramebuffer(overlayFramebuffer.object);
+        resetGuiExtraction();
     }
 
-    public void resetGuiExtraction() {
-        if (overlayFramebuffer == null) return;
-
+    private void resetGuiExtraction() {
         Minecraft minecraft = Minecraft.getInstance();
         int mouseX = (int) minecraft.mouseHandler.getScaledXPos(minecraft.getWindow());
         int mouseY = (int) minecraft.mouseHandler.getScaledYPos(minecraft.getWindow());
 
-        // 创建新的 overlay 渲染状态
-        this.overlayGuiRenderState.reset();
-        this.overlayGuiGraphics = new GuiGraphics(minecraft, overlayGuiRenderState, mouseX, mouseY);
+        this.overlayGuiState.reset();
+        this.overlayGuiGraphics = new GuiGraphics(minecraft, overlayGuiState, mouseX, mouseY);
     }
 
     public void renderFrame() {
         if (overlayFramebuffer == null || !overlayFramebuffer.dirty) return;
         overlayFramebuffer.dirty = false;
-        GlStateManager._glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         renderQuad(overlayFramebuffer.object);
     }
 }

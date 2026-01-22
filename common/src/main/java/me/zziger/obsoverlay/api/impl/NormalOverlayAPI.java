@@ -18,12 +18,7 @@ public class NormalOverlayAPI implements IOverlayAPI {
     }
 
     @Override
-    public GuiGraphics getGuiGraphics() {
+    public GuiGraphics getOverlayGuiGraphics() {
         return this.renderer.getGuiGraphics();
-    }
-
-    @Override
-    public void resetGuiExtraction() {
-        this.renderer.resetGuiExtraction();
     }
 }

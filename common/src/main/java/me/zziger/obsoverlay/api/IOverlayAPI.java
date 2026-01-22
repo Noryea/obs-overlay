@@ -18,13 +18,7 @@ public interface IOverlayAPI {
      * Should be called before rendering elements you want hidden from stream to a `GuiGraphics`
      * This method does not check settings
      */
-    default GuiGraphics getGuiGraphics() {
+    default GuiGraphics getOverlayGuiGraphics() {
         return DummyGuiGraphics.INSTANCE;
     }
-
-    /**
-     * 1.21.11: Called at the start of GUI extraction phase
-     * Initializes overlay-specific GuiRenderState and GuiGraphics
-     */
-    default void resetGuiExtraction() {}
 }
