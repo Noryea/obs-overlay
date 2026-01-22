@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.cursor.CursorType;
 import me.zziger.obsoverlay.OBSOverlay;
 import me.zziger.obsoverlay.OBSOverlayConfig;
 import me.zziger.obsoverlay.OverlayRenderer;
-import me.zziger.obsoverlay.mixin.accessor.GuiGraphicsCursorAccessor;
+import me.zziger.obsoverlay.mixin.accessor.GuiGraphicsAccessor;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -76,7 +76,7 @@ public abstract class GameRendererMixin {
         if (!OBSOverlay.getIsInitialized()) return;
 
         GuiGraphics guiGraphics = OBSOverlay.getAPI().getOverlayGuiGraphics();
-        if (((GuiGraphicsCursorAccessor) guiGraphics).getPendingCursor() != CursorType.DEFAULT) {
+        if (((GuiGraphicsAccessor) guiGraphics).getPendingCursor() != CursorType.DEFAULT) {
             guiGraphics.applyCursor(this.getMinecraft().getWindow());
         }
     }
