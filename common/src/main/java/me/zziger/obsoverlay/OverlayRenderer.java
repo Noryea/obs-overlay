@@ -85,8 +85,10 @@ public class OverlayRenderer implements Closeable {
     }
 
     public @NotNull GuiGraphics getGuiGraphics(IOverlayComponent component, GuiGraphics original) {
-        if (!component.isOverlayEnabled()) return original;
+        // isHidden() means auto-hide is active (a screen is open and this component shouldn't draw on top of it).
+        // This takes priority regardless of overlay state.
         if (component.isHidden()) return DummyGuiGraphics.INSTANCE;
+        if (!component.isOverlayEnabled()) return original;
         GuiGraphics guiGraphics = getGuiGraphics();
         return guiGraphics != null ? guiGraphics : original;
     }
@@ -153,5 +155,11 @@ public class OverlayRenderer implements Closeable {
         if (overlayFramebuffer == null || !overlayFramebuffer.dirty) return;
         overlayFramebuffer.dirty = false;
         renderQuad(overlayFramebuffer.object);
+    }
+
+    public void flushOverlayDeferredElements() {
+        if (overlayGuiGraphics != null) {
+            overlayGuiGraphics.renderDeferredElements();
+        }
     }
 }
