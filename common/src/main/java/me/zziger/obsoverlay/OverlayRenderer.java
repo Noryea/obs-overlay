@@ -156,10 +156,4 @@ public class OverlayRenderer implements Closeable {
         overlayFramebuffer.dirty = false;
         renderQuad(overlayFramebuffer.object);
     }
-
-    public void flushOverlayDeferredElements() {
-        if (overlayGuiGraphics != null) {
-            overlayGuiGraphics.renderDeferredElements();
-        }
-    }
 }

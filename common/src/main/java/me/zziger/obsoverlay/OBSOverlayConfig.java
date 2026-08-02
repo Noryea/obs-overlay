@@ -4,7 +4,6 @@ package me.zziger.obsoverlay;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import dev.architectury.platform.Platform;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -84,7 +83,7 @@ public class OBSOverlayConfig implements ConfigData {
     }
 
     public static Path getPath() {
-        return Platform.getConfigFolder().resolve(OBSOverlay.MOD_ID + ".json");
+        return OverlayEnvironment.getConfigFolder().resolve(OBSOverlay.MOD_ID + ".json");
     }
 
     public static Supplier<Screen> getScreenSupplier(Screen parent) {

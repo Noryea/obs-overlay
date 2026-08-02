@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 
 public final class OverlayPipelines {
-    public static final RenderPipeline OVERLAY_COMPOSITE = register(
+    public static final RenderPipeline OVERLAY_COMPOSITE = RenderPipelines.register(
             RenderPipeline.builder()
                     .withLocation(Identifier.fromNamespaceAndPath("obs_overlay", "pipeline/overlay_composite"))
                     .withVertexShader("core/screenquad")
@@ -23,9 +23,4 @@ public final class OverlayPipelines {
                     .withVertexFormat(DefaultVertexFormat.EMPTY, VertexFormat.Mode.TRIANGLES)
                     .build()
     );
-
-    private static RenderPipeline register(RenderPipeline pipeline) {
-        RenderPipelines.PIPELINES_BY_LOCATION.put(pipeline.getLocation(), pipeline);
-        return pipeline;
-    }
 }

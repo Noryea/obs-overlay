@@ -4,7 +4,6 @@ import com.sun.jna.Function;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
-import dev.architectury.platform.Platform;
 import me.zziger.obsoverlay.error.OverlayHookException;
 import me.zziger.obsoverlay.modules.Kernel32;
 import me.zziger.obsoverlay.modules.MinHook;
@@ -64,8 +63,8 @@ public class OverlayHook {
             throw new OverlayHookException("Failed to get MinHook dll");
         }
 
-        File nativeDir = new File(Platform.getGameFolder().toAbsolutePath().toString().concat("/native"));
-        File copyLibFile = new File(Platform.getGameFolder().toAbsolutePath().toString().concat("/native/MinHook.dll"));
+        File nativeDir = OverlayEnvironment.getGameFolder().resolve("native").toFile();
+        File copyLibFile = new File(nativeDir, "MinHook.dll");
         nativeDir.mkdir();
 
         try {

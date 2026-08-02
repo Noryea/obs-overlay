@@ -62,7 +62,6 @@ public abstract class GameRendererMixin {
             assert overlayRenderer != null;
 
             var obs_overlay$customRenderer = overlayRenderer.getOverlayGuiRenderer(instance);
-            overlayRenderer.flushOverlayDeferredElements();
             overlayRenderer.beginDraw();
             obs_overlay$customRenderer.render(fogBuffer);
             overlayRenderer.endDraw();

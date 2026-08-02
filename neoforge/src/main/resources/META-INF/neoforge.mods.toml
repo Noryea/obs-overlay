@@ -29,13 +29,6 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.obs_overlay]]
-modId = "architectury"
-type = "required"
-versionRange = "[19.0.1,)"
-ordering = "AFTER"
-side = "BOTH"
-
-[[dependencies.obs_overlay]]
 modId = "cloth_config"
 type = "required"
 versionRange = "[21.11.151,)"
