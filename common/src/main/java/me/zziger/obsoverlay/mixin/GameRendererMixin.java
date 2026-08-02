@@ -7,15 +7,15 @@ import com.mojang.blaze3d.platform.cursor.CursorType;
 import me.zziger.obsoverlay.OBSOverlay;
 import me.zziger.obsoverlay.OBSOverlayConfig;
 import me.zziger.obsoverlay.OverlayRenderer;
-import me.zziger.obsoverlay.mixin.accessor.GuiGraphicsAccessor;
+import me.zziger.obsoverlay.mixin.accessor.GuiGraphicsExtractorAccessor;
 import me.zziger.obsoverlay.mixin.accessor.GuiRendererRenderStateAccessor;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.render.GuiRenderer;
-import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,7 +45,7 @@ public abstract class GameRendererMixin {
     private void renderTestIcon(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         if (OBSOverlayConfig.get().showTestIcon && OBSOverlay.getIsInitialized()) {
             try {
-                GuiGraphics overlayGraphics = Objects.requireNonNull(OBSOverlay.getRenderer()).getGuiGraphics();
+                GuiGraphicsExtractor overlayGraphics = Objects.requireNonNull(OBSOverlay.getRenderer()).getGuiGraphicsExtractor();
                 overlayGraphics.blitSprite(
                         RenderPipelines.GUI_TEXTURED,
                         Identifier.withDefaultNamespace("icon/checkmark"),
@@ -80,12 +80,12 @@ public abstract class GameRendererMixin {
     @Shadow
     public abstract Minecraft getMinecraft();
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;applyCursor(Lcom/mojang/blaze3d/platform/Window;)V", shift = At.Shift.AFTER))
-    private void fixCursor(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+    @Inject(method = "extractGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;applyCursor(Lcom/mojang/blaze3d/platform/Window;)V", shift = At.Shift.AFTER))
+    private void fixCursor(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci) {
         if (!OBSOverlay.getIsInitialized()) return;
 
-        GuiGraphics guiGraphics = OBSOverlay.getAPI().getOverlayGuiGraphics();
-        if (((GuiGraphicsAccessor) guiGraphics).getPendingCursor() != CursorType.DEFAULT) {
+        GuiGraphicsExtractor guiGraphics = OBSOverlay.getAPI().getOverlayGuiGraphicsExtractor();
+        if (((GuiGraphicsExtractorAccessor) guiGraphics).getPendingCursor() != CursorType.DEFAULT) {
             guiGraphics.applyCursor(this.getMinecraft().getWindow());
         }
     }

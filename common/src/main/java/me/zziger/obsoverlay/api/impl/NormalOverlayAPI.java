@@ -3,7 +3,7 @@ package me.zziger.obsoverlay.api.impl;
 import me.zziger.obsoverlay.OverlayRenderer;
 import me.zziger.obsoverlay.api.IOverlayAPI;
 import me.zziger.obsoverlay.component.IOverlayComponent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class NormalOverlayAPI implements IOverlayAPI {
     private final OverlayRenderer renderer;
@@ -13,12 +13,12 @@ public class NormalOverlayAPI implements IOverlayAPI {
     }
 
     @Override
-    public GuiGraphics getGuiGraphics(IOverlayComponent component, GuiGraphics original) {
-        return this.renderer.getGuiGraphics(component, original);
+    public GuiGraphicsExtractor getGuiGraphicsExtractor(IOverlayComponent component, GuiGraphicsExtractor original) {
+        return this.renderer.getGuiGraphicsExtractor(component, original);
     }
 
     @Override
-    public GuiGraphics getOverlayGuiGraphics() {
-        return this.renderer.getGuiGraphics();
+    public GuiGraphicsExtractor getOverlayGuiGraphicsExtractor() {
+        return this.renderer.getGuiGraphicsExtractor();
     }
 }

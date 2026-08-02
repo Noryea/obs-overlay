@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "me.zziger.obsoverlay.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
   "client": [
     "GameRendererMixin",
@@ -9,14 +9,15 @@
     "MinecraftMixin",
     "ScreenMixin",
     "VideoSettingsScreenMixin",
-    "accessor.GuiGraphicsAccessor",
+    "accessor.GuiGraphicsExtractorAccessor",
+    "accessor.GuiRendererAccessor",
     "accessor.GuiRendererRenderStateAccessor",
-    "components.ChatHudMixin",
+    "components.ChatComponentMixin",
     "components.ChatScreenMixin",
-    "components.DebugHudMixin",
+    "components.DebugScreenOverlayMixin",
     "components.GuiMixin",
-    "components.PlayerListHudMixin",
-    "components.SubtitlesHudMixin"
+    "components.PlayerTabOverlayMixin",
+    "components.SubtitleOverlayMixin"
   ],
   "mixins": [
   ],

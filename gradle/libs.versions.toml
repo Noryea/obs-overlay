@@ -1,8 +1,7 @@
 [versions]
 minecraft = "26.1.2"
-architectury-api = "20.0.12"
 fabric-loader = "0.19.3"
-fabric-api = "0.150.0+26.1"
+fabric-api = "0.155.2+26.1.2"
 neoforge = "26.1.2.94"
 cloth-config = "26.1.154"
 modmenu = "18.0.0"
@@ -11,9 +10,6 @@ modmenu = "18.0.0"
 minecraft = { module = "net.minecraft:minecraft", version.ref = "minecraft" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
-architectury = { module = "dev.architectury:architectury", version.ref = "architectury-api" }
-architectury-fabric = { module = "dev.architectury:architectury-fabric", version.ref = "architectury-api" }
-architectury-neoforge = { module = "dev.architectury:architectury-neoforge", version.ref = "architectury-api" }
 cloth-config-fabric = { module = "me.shedaniel.cloth:cloth-config-fabric", version.ref = "cloth-config" }
 cloth-config-neoforge = { module = "me.shedaniel.cloth:cloth-config-neoforge", version.ref = "cloth-config" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }

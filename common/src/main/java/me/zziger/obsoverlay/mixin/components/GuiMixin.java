@@ -3,31 +3,50 @@ package me.zziger.obsoverlay.mixin.components;
 import me.zziger.obsoverlay.OBSOverlay;
 import me.zziger.obsoverlay.component.AllDefaultOverlayComponents;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Gui.class)
 public class GuiMixin {
-
-    @ModifyVariable(method = "renderScoreboardSidebar", at = @At("HEAD"), argsOnly = true)
-    private GuiGraphics drawStartScoreboard(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.scoreboards, value);
+    @ModifyVariable(method = "extractScoreboardSidebar", at = @At("HEAD"), argsOnly = true, index = 1)
+    private GuiGraphicsExtractor drawStartScoreboard(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.scoreboards, graphics);
     }
 
-    @ModifyVariable(method = "renderOverlayMessage", at = @At("HEAD"), argsOnly = true)
-    private GuiGraphics drawStartActionbar(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.actionbar, value);
+    @ModifyVariable(method = "extractOverlayMessage", at = @At("HEAD"), argsOnly = true, index = 1)
+    private GuiGraphicsExtractor drawStartActionbar(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.actionbar, graphics);
     }
 
-    @ModifyVariable(method = "renderTitle", at = @At("HEAD"), argsOnly = true)
-    private GuiGraphics drawStartTitleSubtitle(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.titleSubtitle, value);
+    @ModifyVariable(method = "extractTitle", at = @At("HEAD"), argsOnly = true, index = 1)
+    private GuiGraphicsExtractor drawStartTitleSubtitle(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.titleSubtitle, graphics);
     }
 
-    @ModifyVariable(method = "renderEffects", at = @At("HEAD"), argsOnly = true)
-    private GuiGraphics drawStartEffects(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.effects, value);
+    @ModifyVariable(method = "extractEffects", at = @At("HEAD"), argsOnly = true, index = 1)
+    private GuiGraphicsExtractor drawStartEffects(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.effects, graphics);
+    }
+
+    @ModifyVariable(method = "extractHotbarAndDecorations", at = @At("HEAD"), argsOnly = true, index = 1)
+    private GuiGraphicsExtractor drawStartMainHud(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
+    }
+
+    @ModifyVariable(method = "extractChat", at = @At("HEAD"), argsOnly = true, index = 1)
+    private GuiGraphicsExtractor drawStartChat(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.chat, graphics);
+    }
+
+    @ModifyVariable(method = "extractTabList", at = @At("HEAD"), argsOnly = true, index = 1)
+    private GuiGraphicsExtractor drawStartPlayerList(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.playerList, graphics);
+    }
+
+    @ModifyVariable(method = "extractSubtitleOverlay", at = @At("HEAD"), argsOnly = true, index = 1)
+    private GuiGraphicsExtractor drawStartSubtitles(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.subtitles, graphics);
     }
 }

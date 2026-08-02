@@ -3,66 +3,66 @@ package me.zziger.obsoverlay.neoforge.mixin;
 import me.zziger.obsoverlay.OBSOverlay;
 import me.zziger.obsoverlay.component.AllDefaultOverlayComponents;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Gui.class)
 public class GuiMixin {
-    @ModifyVariable(method = "renderHotbar", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartHotbar(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "extractHotbar", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartHotbar(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
-    @ModifyVariable(method = "renderContextualInfoBarBackground", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartContextualInfoBarBarBackground(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "extractContextualInfoBarBackground", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartContextualInfoBarBarBackground(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
-    @ModifyVariable(method = "renderContextualInfoBar", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartContextualInfoBar(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "extractContextualInfoBar", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartContextualInfoBar(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
-    @ModifyVariable(method = "renderExperienceLevel", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartExperienceBar(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "extractExperienceLevel", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartExperienceBar(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
-    @ModifyVariable(method = "renderHealthLevel", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartPlayerHealth(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "extractHealthLevel", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartPlayerHealth(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
-    @ModifyVariable(method = "renderArmorLevel", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartPlayerArmor(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "extractArmorLevel", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartPlayerArmor(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
-    @ModifyVariable(method = "renderFoodLevel", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartPlayerFood(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "extractFoodLevel", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartPlayerFood(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
-    @ModifyVariable(method = "renderVehicleHealth", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartVehicleHealth(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "extractVehicleHealth", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartVehicleHealth(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
-    @ModifyVariable(method = "renderAirLevel", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartAirLevel(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "extractAirLevel", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartAirLevel(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
-    @ModifyVariable(method = "maybeRenderSelectedItemName", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartSelectedItemName(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "extractSelectedItemName(Lnet/minecraft/client/gui/GuiGraphicsExtractor;I)V", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartSelectedItemName(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
-    @ModifyVariable(method = "maybeRenderSpectatorTooltip", at = @At(value = "HEAD"), argsOnly = true)
-    private GuiGraphics drawStartSpectatorTooltip(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
+    @ModifyVariable(method = "maybeExtractSpectatorTooltip", at = @At(value = "HEAD"), argsOnly = true)
+    private GuiGraphicsExtractor drawStartSpectatorTooltip(GuiGraphicsExtractor graphics) {
+        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
     }
 
 }

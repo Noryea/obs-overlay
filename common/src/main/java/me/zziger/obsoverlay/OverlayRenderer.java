@@ -9,8 +9,8 @@ import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import me.zziger.obsoverlay.component.IOverlayComponent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.render.state.GuiRenderState;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
@@ -21,7 +21,7 @@ public class OverlayRenderer implements Closeable {
     private OverlayFramebuffer overlayFramebuffer;
 
     private final GuiRenderState overlayGuiState = new GuiRenderState();
-    private GuiGraphics overlayGuiGraphics;
+    private GuiGraphicsExtractor overlayGuiGraphicsExtractor;
 
     OverlayRenderer() {
         OverlayHook.init();
@@ -66,17 +66,17 @@ public class OverlayRenderer implements Closeable {
         else return Minecraft.getInstance().getMainRenderTarget();
     }
 
-    public GuiGraphics getGuiGraphics() {
-        return this.overlayGuiGraphics;
+    public GuiGraphicsExtractor getGuiGraphicsExtractor() {
+        return this.overlayGuiGraphicsExtractor;
     }
 
-    public @NotNull GuiGraphics getGuiGraphics(IOverlayComponent component, GuiGraphics original) {
+    public @NotNull GuiGraphicsExtractor getGuiGraphicsExtractor(IOverlayComponent component, GuiGraphicsExtractor original) {
         // isHidden() means auto-hide is active (a screen is open and this component shouldn't draw on top of it).
         // This takes priority regardless of overlay state.
-        if (component.isHidden()) return DummyGuiGraphics.INSTANCE;
+        if (component.isHidden()) return DummyGuiGraphicsExtractor.INSTANCE;
         if (!component.isOverlayEnabled()) return original;
-        GuiGraphics guiGraphics = getGuiGraphics();
-        return guiGraphics != null ? guiGraphics : original;
+        GuiGraphicsExtractor GuiGraphicsExtractor = getGuiGraphicsExtractor();
+        return GuiGraphicsExtractor != null ? GuiGraphicsExtractor : original;
     }
 
     public void beginDraw() {
@@ -110,7 +110,6 @@ public class OverlayRenderer implements Closeable {
                 mainTarget.getColorTextureView(),
                 OptionalInt.empty()
         )) {
-//            renderPass.setPipeline(RenderPipelines.ENTITY_OUTLINE_BLIT);
             renderPass.setPipeline(OverlayPipelines.OVERLAY_COMPOSITE);
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.bindTexture(
@@ -136,7 +135,7 @@ public class OverlayRenderer implements Closeable {
         int mouseY = (int) minecraft.mouseHandler.getScaledYPos(minecraft.getWindow());
 
         this.overlayGuiState.reset();
-        this.overlayGuiGraphics = new GuiGraphics(minecraft, overlayGuiState, mouseX, mouseY);
+        this.overlayGuiGraphicsExtractor = new GuiGraphicsExtractor(minecraft, overlayGuiState, mouseX, mouseY);
     }
 
     public void renderFrame() {

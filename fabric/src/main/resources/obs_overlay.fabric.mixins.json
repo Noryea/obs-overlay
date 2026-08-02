@@ -1,13 +1,12 @@
 {
   "required": true,
   "package": "me.zziger.obsoverlay.fabric.client.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
   "client": [
     "GuiMixin"
   ],
-  "mixins": [
-  ],
+  "mixins": [],
   "injectors": {
     "defaultRequire": 1
   }
