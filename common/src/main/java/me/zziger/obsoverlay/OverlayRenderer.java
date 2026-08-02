@@ -8,10 +8,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import me.zziger.obsoverlay.component.IOverlayComponent;
-import me.zziger.obsoverlay.mixin.accessor.GuiRendererAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.state.GuiRenderState;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +22,6 @@ public class OverlayRenderer implements Closeable {
 
     private final GuiRenderState overlayGuiState = new GuiRenderState();
     private GuiGraphics overlayGuiGraphics;
-    private GuiRenderer overlayGuiRenderer;
 
     OverlayRenderer() {
         OverlayHook.init();
@@ -60,19 +57,8 @@ public class OverlayRenderer implements Closeable {
         }
     }
 
-    public @NotNull GuiRenderer getOverlayGuiRenderer(GuiRenderer copyFrom) {
-        if (overlayGuiRenderer != null) return overlayGuiRenderer;
-
-        var accessor = (GuiRendererAccessor) copyFrom;
-        this.overlayGuiRenderer = new GuiRenderer(
-                this.overlayGuiState,
-                accessor.getBufferSource(),
-                accessor.getSubmitNodeCollector(),
-                accessor.getFeatureRenderDispatcher(),
-                accessor.getPictureInPictureRenderers().values().stream().toList()
-        );
-
-        return overlayGuiRenderer;
+    public GuiRenderState getOverlayGuiState() {
+        return this.overlayGuiState;
     }
 
     public RenderTarget getGuiRenderTarget() {
@@ -116,12 +102,12 @@ public class OverlayRenderer implements Closeable {
         if (framebuffer.getColorTexture() == null) return;
 
         Minecraft minecraft = Minecraft.getInstance();
-        int width = minecraft.getWindow().getWidth();
-        int height = minecraft.getWindow().getHeight();
+        RenderTarget mainTarget = minecraft.getMainRenderTarget();
+        if (mainTarget.getColorTextureView() == null) return;
 
         try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
-                () -> "Overlay Screen",
-                new OverlayScreenTextureView(width, height),
+                () -> "Overlay Composite",
+                mainTarget.getColorTextureView(),
                 OptionalInt.empty()
         )) {
 //            renderPass.setPipeline(RenderPipelines.ENTITY_OUTLINE_BLIT);
@@ -134,6 +120,8 @@ public class OverlayRenderer implements Closeable {
             );
             renderPass.draw(0, 3);
         }
+        // Update swap chain presentation to display the composited frame
+        RenderSystem.getDevice().createCommandEncoder().presentTexture(mainTarget.getColorTextureView());
     }
 
     public void beginFrame() {

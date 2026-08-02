@@ -1,15 +1,19 @@
 package me.zziger.obsoverlay.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 import me.zziger.obsoverlay.OBSOverlay;
 import me.zziger.obsoverlay.OBSOverlayConfig;
 import me.zziger.obsoverlay.OverlayRenderer;
 import me.zziger.obsoverlay.mixin.accessor.GuiGraphicsAccessor;
+import me.zziger.obsoverlay.mixin.accessor.GuiRendererRenderStateAccessor;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.render.GuiRenderer;
+import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -17,7 +21,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Objects;
@@ -53,19 +56,25 @@ public abstract class GameRendererMixin {
         }
     }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;render(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V"))
-    private void redirectGuiRendering(GuiRenderer instance, GpuBufferSlice fogBuffer) {
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;render(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V"))
+    private void obs_overlay$wrapGuiRendering(GuiRenderer instance, GpuBufferSlice fogBuffer, Operation<Void> original) {
+        original.call(instance, fogBuffer);
+
+        if (!OBSOverlay.getIsInitialized()) return;
+        OverlayRenderer overlayRenderer = OBSOverlay.getRenderer();
+        if (overlayRenderer == null) return;
+
+        GuiRenderState overlayState = overlayRenderer.getOverlayGuiState();
+        if (overlayState == null) return;
+
+        GuiRendererRenderStateAccessor accessor = (GuiRendererRenderStateAccessor) instance;
+        GuiRenderState originalState = accessor.getRenderState(); // to be restored for the original pass
+
+        accessor.setRenderState(overlayState);
+        overlayRenderer.beginDraw();
         instance.render(fogBuffer);
-
-        if (OBSOverlay.getIsInitialized()) {
-            OverlayRenderer overlayRenderer = OBSOverlay.getRenderer();
-            assert overlayRenderer != null;
-
-            var obs_overlay$customRenderer = overlayRenderer.getOverlayGuiRenderer(instance);
-            overlayRenderer.beginDraw();
-            obs_overlay$customRenderer.render(fogBuffer);
-            overlayRenderer.endDraw();
-        }
+        overlayRenderer.endDraw();
+        accessor.setRenderState(originalState);
     }
 
     @Shadow

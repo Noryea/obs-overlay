@@ -3,6 +3,9 @@
   "package": "me.zziger.obsoverlay.fabric.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
+  "client": [
+    "GuiMixin"
+  ],
   "mixins": [
   ],
   "injectors": {

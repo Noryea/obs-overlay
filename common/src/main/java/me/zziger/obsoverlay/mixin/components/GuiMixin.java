@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(Gui.class)
 public class GuiMixin {
 
-    @ModifyVariable(method = "displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V", at = @At("HEAD"), argsOnly = true)
+    @ModifyVariable(method = "renderScoreboardSidebar", at = @At("HEAD"), argsOnly = true)
     private GuiGraphics drawStartScoreboard(GuiGraphics value) {
         return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.scoreboards, value);
     }
@@ -29,10 +29,5 @@ public class GuiMixin {
     @ModifyVariable(method = "renderEffects", at = @At("HEAD"), argsOnly = true)
     private GuiGraphics drawStartEffects(GuiGraphics value) {
         return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.effects, value);
-    }
-
-    @ModifyVariable(method = "renderHotbarAndDecorations", at = @At("HEAD"), argsOnly = true)
-    private GuiGraphics drawStartMainHud(GuiGraphics value) {
-        return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.mainHud, value);
     }
 }
