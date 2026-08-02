@@ -5,6 +5,10 @@ plugins {
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    neoForge {
+        convertAccessWideners(tasks.named("shadowJar", Jar), "obs_overlay.accesswidener")
+    }
 }
 
 architectury {
@@ -37,12 +41,12 @@ repositories {
 }
 
 dependencies {
-    neoForge "net.neoforged:neoforge:$rootProject.neoforge_version"
+    neoForge libs.neoforge
 
-    modImplementation "me.shedaniel.cloth:cloth-config-neoforge:$rootProject.cloth_config_version"
+    implementation libs.cloth.config.neoforge
 
-    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
+    common(project(path: ':common')) { transitive false }
+    shadowBundle project(path: ':common')
 }
 
 processResources {
@@ -55,24 +59,24 @@ processResources {
 
 shadowJar {
     configurations = [project.configurations.shadowBundle]
-    archiveClassifier = 'dev-shadow'
+    archiveClassifier = ''
 }
 
-remapJar {
-    input.set shadowJar.archiveFile
+jar {
     dependsOn shadowJar
-    atAccessWideners.add "obs_overlay.accesswidener" // generate the accesstransformer.cfg
+    enabled = false
 }
 
+def mcVersion = libs.versions.minecraft.get()
 
 unifiedPublishing {
     project {
-        displayName = "[NeoForge $rootProject.supported_version] v$rootProject.mod_version"
+        displayName = "[NeoForge $mcVersion] v$rootProject.mod_version"
         releaseType = "beta"
-        gameVersions = ["1.21.4"]
+        gameVersions = ["26.1.x"]
         gameLoaders = ["neoforge"]
 
-        mainPublication remapJar
+        mainPublication jar
 
         relations {
             depends {
@@ -85,7 +89,7 @@ unifiedPublishing {
             curseforge {
                 token = rootProject.hasProperty("curse_api_key") ? rootProject.property("curse_api_key") : System.getenv("CURSE_API_KEY")
                 id = rootProject.curseforge_id
-                gameVersions.addAll "Java 21"
+                gameVersions.addAll "Java 25"
             }
         }
 
@@ -93,7 +97,7 @@ unifiedPublishing {
             modrinth {
                 token = rootProject.hasProperty("modrinth_key") ? rootProject.property("modrinth_key") : System.getenv("MODRINTH_TOKEN")
                 id = rootProject.modrinth_id
-                version = "$rootProject.mod_version+$rootProject.minecraft_version-$project.name"
+                version = "$rootProject.mod_version+$mcVersion-$project.name"
             }
         }
     }
