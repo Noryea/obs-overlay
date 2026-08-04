@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(ChatScreen.class)
 public class ChatScreenMixin {
-    @ModifyVariable(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V", shift = At.Shift.AFTER), argsOnly = true, index = 1)
+    @ModifyVariable(method = "render", at = @At(value = "HEAD"), argsOnly = true, index = 1)
     private GuiGraphics drawStart(GuiGraphics guiGraphics) {
         return OBSOverlay.getAPI().getGuiGraphics(AllDefaultOverlayComponents.chatBar, guiGraphics);
     }
