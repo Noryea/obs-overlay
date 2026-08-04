@@ -45,6 +45,8 @@ processResources {
     }
 }
 
+def mcVersion = libs.versions.minecraft.get()
+
 jar {
     archiveClassifier = 'raw'
 }
@@ -53,11 +55,10 @@ shadowJar {
     dependsOn jar
     configurations = [project.configurations.shadowCommon]
     archiveClassifier = null
+    archiveVersion = "$project.version+$mcVersion"
 }
 
 assemble.dependsOn shadowJar
-
-def mcVersion = libs.versions.minecraft.get()
 
 unifiedPublishing {
     project {
