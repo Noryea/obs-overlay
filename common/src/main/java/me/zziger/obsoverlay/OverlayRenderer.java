@@ -71,10 +71,8 @@ public class OverlayRenderer implements Closeable {
     }
 
     public @NotNull GuiGraphicsExtractor getGuiGraphicsExtractor(IOverlayComponent component, GuiGraphicsExtractor original) {
-        // isHidden() means auto-hide is active (a screen is open and this component shouldn't draw on top of it).
-        // This takes priority regardless of overlay state.
-        if (component.isHidden()) return DummyGuiGraphicsExtractor.INSTANCE;
         if (!component.isOverlayEnabled()) return original;
+        if (component.isHidden()) return DummyGuiGraphicsExtractor.INSTANCE;
         GuiGraphicsExtractor GuiGraphicsExtractor = getGuiGraphicsExtractor();
         return GuiGraphicsExtractor != null ? GuiGraphicsExtractor : original;
     }
