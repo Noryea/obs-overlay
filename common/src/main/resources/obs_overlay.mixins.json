@@ -10,7 +10,6 @@
     "ScreenMixin",
     "VideoSettingsScreenMixin",
     "accessor.GuiGraphicsExtractorAccessor",
-    "accessor.GuiRendererAccessor",
     "accessor.GuiRendererRenderStateAccessor",
     "components.ChatComponentMixin",
     "components.ChatScreenMixin",

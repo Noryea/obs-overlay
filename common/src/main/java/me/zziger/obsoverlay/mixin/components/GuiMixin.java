@@ -30,11 +30,6 @@ public class GuiMixin {
         return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.effects, graphics);
     }
 
-    @ModifyVariable(method = "extractHotbarAndDecorations", at = @At("HEAD"), argsOnly = true, index = 1)
-    private GuiGraphicsExtractor drawStartMainHud(GuiGraphicsExtractor graphics) {
-        return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.mainHud, graphics);
-    }
-
     @ModifyVariable(method = "extractChat", at = @At("HEAD"), argsOnly = true, index = 1)
     private GuiGraphicsExtractor drawStartChat(GuiGraphicsExtractor graphics) {
         return OBSOverlay.getAPI().getGuiGraphicsExtractor(AllDefaultOverlayComponents.chat, graphics);
