@@ -3,6 +3,10 @@ plugins {
     id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+}
+
 architectury {
     platformSetupLoomIde()
     fabric()
@@ -55,7 +59,9 @@ shadowJar {
 }
 
 remapJar {
+    injectAccessWidener = true
     input.set shadowJar.archiveFile
+    dependsOn shadowJar
 }
 
 unifiedPublishing {

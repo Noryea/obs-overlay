@@ -3,6 +3,10 @@ plugins {
     id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+}
+
 architectury {
     platformSetupLoomIde()
     neoForge()
@@ -56,6 +60,8 @@ shadowJar {
 
 remapJar {
     input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    atAccessWideners.add "obs_overlay.accesswidener" // generate the accesstransformer.cfg
 }
 
 
