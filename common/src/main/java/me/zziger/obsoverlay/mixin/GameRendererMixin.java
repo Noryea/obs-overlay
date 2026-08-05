@@ -2,7 +2,6 @@ package me.zziger.obsoverlay.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 import me.zziger.obsoverlay.OBSOverlay;
 import me.zziger.obsoverlay.OBSOverlayConfig;
@@ -17,6 +16,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import net.minecraft.resources.Identifier;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -41,7 +41,7 @@ public abstract class GameRendererMixin {
         OBSOverlay.getAPI().backupDepth(true);
     }*/
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;render(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V", shift = At.Shift.BEFORE))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;render()V", shift = At.Shift.BEFORE))
     private void renderTestIcon(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         if (OBSOverlayConfig.get().showTestIcon && OBSOverlay.getIsInitialized()) {
             try {
@@ -56,9 +56,9 @@ public abstract class GameRendererMixin {
         }
     }
 
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;render(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V"))
-    private void obs_overlay$wrapGuiRendering(GuiRenderer instance, GpuBufferSlice fogBuffer, Operation<Void> original) {
-        original.call(instance, fogBuffer);
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;render()V"))
+    private void obs_overlay$wrapGuiRendering(GuiRenderer instance, Operation<Void> original) {
+        original.call(instance);
 
         if (!OBSOverlay.getIsInitialized()) return;
         OverlayRenderer overlayRenderer = OBSOverlay.getRenderer();
@@ -72,21 +72,22 @@ public abstract class GameRendererMixin {
 
         accessor.setRenderState(overlayState);
         overlayRenderer.beginDraw();
-        instance.render(fogBuffer);
+        instance.render();
         overlayRenderer.endDraw();
         accessor.setRenderState(originalState);
     }
 
     @Shadow
-    public abstract Minecraft getMinecraft();
+    @Final
+    private Minecraft minecraft;
 
-    @Inject(method = "extractGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;applyCursor(Lcom/mojang/blaze3d/platform/Window;)V", shift = At.Shift.AFTER))
-    private void fixCursor(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci) {
+    @Inject(method = "extract", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/DeltaTracker;ZZ)V", shift = At.Shift.AFTER))
+    private void fixCursor(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
         if (!OBSOverlay.getIsInitialized()) return;
 
-        GuiGraphicsExtractor guiGraphics = OBSOverlay.getAPI().getOverlayGuiGraphicsExtractor();
-        if (((GuiGraphicsExtractorAccessor) guiGraphics).getPendingCursor() != CursorType.DEFAULT) {
-            guiGraphics.applyCursor(this.getMinecraft().getWindow());
+        GuiGraphicsExtractor graphics = OBSOverlay.getAPI().getOverlayGuiGraphicsExtractor();
+        if (graphics != null && ((GuiGraphicsExtractorAccessor) graphics).getPendingCursor() != CursorType.DEFAULT) {
+            graphics.applyCursor(this.minecraft.getWindow());
         }
     }
 }

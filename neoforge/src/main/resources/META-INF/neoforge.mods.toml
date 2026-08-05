@@ -17,21 +17,21 @@ logoFile = "assets/obs_overlay/icon.png"
 [[dependencies.obs_overlay]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.1,)"
+versionRange = "[26.2,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.obs_overlay]]
 modId = "minecraft"
 type = "required"
-versionRange = "[26.1,)"
+versionRange = "[26.2,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.obs_overlay]]
 modId = "cloth_config"
 type = "required"
-versionRange = "[26.1,)"
+versionRange = "[26.2,)"
 ordering = "AFTER"
 side = "BOTH"
 

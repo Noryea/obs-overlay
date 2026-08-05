@@ -1,24 +1,31 @@
 package me.zziger.obsoverlay;
 
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.CommandEncoder;
+import com.mojang.blaze3d.systems.GpuSurface;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.systems.SurfaceException;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.GpuTextureView;
 import me.zziger.obsoverlay.component.IOverlayComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector4f;
 
 import java.io.Closeable;
-import java.util.OptionalInt;
+import java.util.Optional;
+import java.util.OptionalDouble;
 
 public class OverlayRenderer implements Closeable {
     private boolean framebufferOverridden = false;
     private OverlayFramebuffer overlayFramebuffer;
+    private GpuSurface overlaySurface;
 
     private final GuiRenderState overlayGuiState = new GuiRenderState();
     private GuiGraphicsExtractor overlayGuiGraphicsExtractor;
@@ -27,6 +34,7 @@ public class OverlayRenderer implements Closeable {
         OverlayHook.init();
         OverlayHook.subscribe(this::renderFrame);
         initializeFramebuffers();
+        initializeSurface();
     }
 
     public void close() {
@@ -35,9 +43,26 @@ public class OverlayRenderer implements Closeable {
 
     private void initializeFramebuffers() {
         Minecraft client = Minecraft.getInstance();
-        RenderTarget simpleFramebuffer = new TextureTarget("Overlay Target", client.getWindow().getWidth(), client.getWindow().getHeight(), true);
+        RenderTarget simpleFramebuffer = new TextureTarget("Overlay Target", client.getWindow().getWidth(), client.getWindow().getHeight(), true, GpuFormat.RGBA8_UNORM);
         clearFramebuffer(simpleFramebuffer);
         this.overlayFramebuffer = new OverlayFramebuffer(simpleFramebuffer);
+    }
+
+    /**
+     * Creates the overlay's own {@link GpuSurface}
+     */
+    private void initializeSurface() {
+        Minecraft client = Minecraft.getInstance();
+        this.overlaySurface = new GpuSurface(new OverlaySurfaceBackend());
+        try {
+            this.overlaySurface.configure(new GpuSurface.Configuration(
+                    client.getWindow().getWidth(),
+                    client.getWindow().getHeight(),
+                    GpuSurface.PresentMode.IMMEDIATE
+            ));
+        } catch (SurfaceException e) {
+            OBSOverlay.LOGGER.error("Failed to configure overlay surface", e);
+        }
     }
 
     private void markOverlayDirty() {
@@ -51,9 +76,9 @@ public class OverlayRenderer implements Closeable {
 
         CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
         if (target.useDepth && target.getDepthTexture() != null) {
-            encoder.clearColorAndDepthTextures(colorTexture, 0, target.getDepthTexture(), 1.0);
+            encoder.clearColorAndDepthTextures(colorTexture, new Vector4f(0, 0, 0, 0), target.getDepthTexture(), 1.0);
         } else {
-            encoder.clearColorTexture(colorTexture,0);
+            encoder.clearColorTexture(colorTexture, new Vector4f(0, 0, 0, 0));
         }
     }
 
@@ -63,7 +88,7 @@ public class OverlayRenderer implements Closeable {
 
     public RenderTarget getGuiRenderTarget() {
         if (this.framebufferOverridden && overlayFramebuffer != null) return overlayFramebuffer.object;
-        else return Minecraft.getInstance().getMainRenderTarget();
+        else return Minecraft.getInstance().gameRenderer.mainRenderTarget();
     }
 
     public GuiGraphicsExtractor getGuiGraphicsExtractor() {
@@ -94,31 +119,59 @@ public class OverlayRenderer implements Closeable {
                 client.getWindow().getWidth(),
                 client.getWindow().getHeight()
         );
+        if (overlaySurface == null) return;
+        try {
+            overlaySurface.configure(new GpuSurface.Configuration(
+                    client.getWindow().getWidth(),
+                    client.getWindow().getHeight(),
+                    GpuSurface.PresentMode.IMMEDIATE
+            ));
+        } catch (SurfaceException e) {
+            OBSOverlay.LOGGER.warn("Failed to reconfigure overlay surface", e);
+        }
     }
 
-    private static void renderQuad(RenderTarget framebuffer) {
-        if (framebuffer.getColorTexture() == null) return;
+    private void renderFrame() {
+        if (overlayFramebuffer == null || overlaySurface == null || !overlayFramebuffer.dirty) return;
+        overlayFramebuffer.dirty = false;
 
         Minecraft minecraft = Minecraft.getInstance();
-        RenderTarget mainTarget = minecraft.getMainRenderTarget();
+        RenderTarget mainTarget = minecraft.gameRenderer.mainRenderTarget();
         if (mainTarget.getColorTextureView() == null) return;
+
+        renderQuad(overlayFramebuffer.object, mainTarget);
+
+        try {
+            overlaySurface.acquireNextTexture();
+            overlaySurface.blitFromTexture(RenderSystem.getDevice().createCommandEncoder(), mainTarget.getColorTextureView());
+            overlaySurface.present();
+        } catch (SurfaceException e) {
+            OBSOverlay.LOGGER.error("Failed to present overlay surface", e);
+        }
+    }
+
+    private static void renderQuad(RenderTarget overlayTarget, RenderTarget mainTarget) {
+        GpuTextureView overlayView = overlayTarget.getColorTextureView();
+        GpuTextureView mainColorView = mainTarget.getColorTextureView();
+        if (overlayView == null || mainColorView == null) return;
 
         try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
                 () -> "Overlay Composite",
-                mainTarget.getColorTextureView(),
-                OptionalInt.empty()
+                mainColorView,
+                Optional.empty(),
+                null,
+                OptionalDouble.empty()
         )) {
+//            renderPass.setPipeline(RenderPipelines.ENTITY_OUTLINE_BLIT);
             renderPass.setPipeline(OverlayPipelines.OVERLAY_COMPOSITE);
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.bindTexture(
                     "InSampler",
-                    framebuffer.getColorTextureView(),
+                    overlayView,
                     RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
             );
-            renderPass.draw(0, 3);
+            renderPass.draw(3, 1, 0, 0);
         }
-        // Update swap chain presentation to display the composited frame
-        RenderSystem.getDevice().createCommandEncoder().presentTexture(mainTarget.getColorTextureView());
     }
 
     public void beginFrame() {
@@ -134,11 +187,5 @@ public class OverlayRenderer implements Closeable {
 
         this.overlayGuiState.reset();
         this.overlayGuiGraphicsExtractor = new GuiGraphicsExtractor(minecraft, overlayGuiState, mouseX, mouseY);
-    }
-
-    public void renderFrame() {
-        if (overlayFramebuffer == null || !overlayFramebuffer.dirty) return;
-        overlayFramebuffer.dirty = false;
-        renderQuad(overlayFramebuffer.object);
     }
 }

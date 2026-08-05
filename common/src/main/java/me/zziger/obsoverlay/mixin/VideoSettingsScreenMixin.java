@@ -22,7 +22,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
     @Inject(method = "addOptions", at = @At("TAIL"))
     public void init(CallbackInfo ci) {
         this.list.addSmall(Button.builder(Component.translatable("obs_overlay.config.title"), (button) -> {
-            this.minecraft.setScreen(OBSOverlayConfig.getScreenSupplier((VideoSettingsScreen) (Object) this).get());
+            this.minecraft.gui.setScreen(OBSOverlayConfig.getScreenSupplier((VideoSettingsScreen) (Object) this).get());
         }).build(), null);
     }
 }

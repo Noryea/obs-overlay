@@ -67,7 +67,7 @@ unifiedPublishing {
     project {
         displayName = "[NeoForge $mcVersion] v$rootProject.mod_version"
         releaseType = "beta"
-        gameVersions = ["26.1.x"]
+        gameVersions = ["26.2"]
         gameLoaders = ["neoforge"]
 
         mainPublication jar

@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.object.banner.BannerFlagModel;
 import net.minecraft.client.model.object.book.BookModel;
-import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -20,9 +19,9 @@ import net.minecraft.util.profiling.ResultField;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
-import net.minecraft.world.level.block.state.properties.WoodType;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.joml.Quaternionfc;
+import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -94,23 +93,19 @@ public class DummyGuiGraphicsExtractor extends GuiGraphicsExtractor {
     }
 
     @Override
-    public void entity(EntityRenderState renderState, float scale, Vector3f translation, Quaternionf rotation, Quaternionf overrideCameraAngle, int x0, int y0, int x1, int y1) {
+    public void entity(EntityRenderState renderState, float scale, Vector3fc translation, Quaternionfc rotation, @Nullable Quaternionfc overrideCameraAngle, int x0, int y0, int x1, int y1) {
     }
 
     @Override
-    public void skin(PlayerModel playerModel, Identifier texture, float rotationX, float rotationY, float pivotY, float scale, int x0, int y0, int x1, int y1) {
+    public void skin(Model.Simple playerModel, Identifier texture, float scale, float rotationX, float rotationY, float pivotY, int x0, int y0, int x1, int y1) {
     }
 
     @Override
-    public void book(BookModel bookModel, Identifier texture, float open, float flip, float scale, int x0, int y0, int x1, int y1) {
+    public void book(BookModel bookModel, Identifier texture, float scale, float open, float flip, int x0, int y0, int x1, int y1) {
     }
 
     @Override
     public void bannerPattern(BannerFlagModel flag, DyeColor baseColor, BannerPatternLayers resultBannerPatterns, int x0, int y0, int x1, int y1) {
-    }
-
-    @Override
-    public void sign(Model.Simple signModel, float scale, WoodType woodType, int x0, int y0, int x1, int y1) {
     }
 
     @Override
