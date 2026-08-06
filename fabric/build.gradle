@@ -5,7 +5,7 @@ plugins {
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
-    injectAccessWidener(tasks.named('jar'))
+    injectAccessWidener(tasks.named('shadowJar'))
 }
 
 architectury {
@@ -34,7 +34,7 @@ dependencies {
     compileOnly libs.modmenu
 
     common(project(path: ':common')) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+    shadowCommon(project(path: ':common', configuration: 'transformProductionFabric')) { transitive false }
 }
 
 processResources {

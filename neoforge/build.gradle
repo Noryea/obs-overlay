@@ -37,7 +37,7 @@ dependencies {
     implementation libs.cloth.config.neoforge
 
     common(project(path: ':common')) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive false }
+    shadowCommon(project(path: ':common', configuration: 'transformProductionNeoForge')) { transitive false }
 }
 
 processResources {

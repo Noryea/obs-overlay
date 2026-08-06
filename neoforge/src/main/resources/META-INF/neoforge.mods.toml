@@ -31,7 +31,7 @@ side = "BOTH"
 [[dependencies.obs_overlay]]
 modId = "cloth_config"
 type = "required"
-versionRange = "[26.1.154,)"
+versionRange = "[26.1,)"
 ordering = "AFTER"
 side = "BOTH"
 
