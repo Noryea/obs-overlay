@@ -1,6 +1,7 @@
 package me.zziger.obsoverlay.mixin;
 
 import me.zziger.obsoverlay.OBSOverlay;
+import me.zziger.obsoverlay.OverlayHook;
 import me.zziger.obsoverlay.OverlayRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
@@ -21,6 +22,7 @@ public class MinecraftMixin {
         OverlayRenderer renderer = OBSOverlay.getRenderer();
         if (renderer != null)
             renderer.onResolutionChanged((Minecraft)(Object)this);
+        OverlayHook.reinstallHook();
     }
 
     @Inject(method = "runTick(Z)V", at = @At("HEAD"))
