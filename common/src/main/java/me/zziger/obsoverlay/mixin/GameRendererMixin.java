@@ -85,7 +85,7 @@ public abstract class GameRendererMixin {
         if (!OBSOverlay.getIsInitialized()) return;
 
         GuiGraphics guiGraphics = OBSOverlay.getAPI().getOverlayGuiGraphics();
-        if (((GuiGraphicsAccessor) guiGraphics).getPendingCursor() != CursorType.DEFAULT) {
+        if (guiGraphics != null && ((GuiGraphicsAccessor) guiGraphics).getPendingCursor() != CursorType.DEFAULT) {
             guiGraphics.applyCursor(this.getMinecraft().getWindow());
         }
     }
